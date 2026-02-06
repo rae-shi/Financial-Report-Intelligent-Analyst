@@ -1,0 +1,9 @@
+langgraph
+langchain
+langchain-openai
+langchain-google-genai
+langchain-community
+psycopg2-binary
+pdfplumber
+python-dotenv
+langchain_postgres
