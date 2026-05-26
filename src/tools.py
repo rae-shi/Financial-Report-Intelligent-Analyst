@@ -28,16 +28,47 @@ def calculate_financial_ratio(numerator: float, denominator: float) -> float:
 @tool
 def search_financial_docs(query: str) -> str:
     """
-    Searches the uploaded 10-K financial reports and company documents for 
-    specific data points. Use this to find line items like 'Total Revenue', 
-    'Net Income', 'Total Debt', or 'Risk Factors' before performing analysis.
+    Searches the uploaded 10-K financial reports. Use this to find line items like 
+    'Total Revenue', 'Net Income', or 'Risk Factors'. This tool automatically retrieves 
+    both narrative text and structured financial markdown tables.
     """
     
-    # Retrieve the top 5 most relevant chunks from the 10-K
-    results = vector_store.similarity_search(query, k=5)
+    # 1. Search for the top 3 most relevant TEXT chunks
+    text_results = vector_store.similarity_search(
+        query, 
+        k=3, 
+        filter={"type": "text"}
+    )
     
-    # Combine results into a single string for the Analyst to read
-    return "\n\n".join([doc.page_content for doc in results])
+    # 2. Search for the top 2 most relevant TABLES
+    table_results = vector_store.similarity_search(
+        query, 
+        k=2, 
+        filter={"type": "table"}
+    )
+    
+    # 3. Format the output so the LLM clearly understands what it is reading
+    formatted_output = "### SEARCH RESULTS ###\n\n"
+    
+    formatted_output += "--- NARRATIVE CONTEXT (TEXT) ---\n"
+    if not text_results:
+        formatted_output += "No relevant text found.\n"
+    else:
+        for i, doc in enumerate(text_results):
+            source = doc.metadata.get('source', 'Unknown Document')
+            page = doc.metadata.get('page', 'Unknown Page')
+            formatted_output += f"[Text Result {i+1} from {source} (Page {page})]:\n{doc.page_content}\n\n"
+            
+    formatted_output += "--- FINANCIAL DATA (TABLES) ---\n"
+    if not table_results:
+        formatted_output += "No relevant tables found.\n"
+    else:
+        for i, doc in enumerate(table_results):
+            source = doc.metadata.get('source', 'Unknown Document')
+            page = doc.metadata.get('page', 'Unknown Page')
+            formatted_output += f"[Table Result {i+1} from {source} (Page {page})]:\n{doc.page_content}\n\n"
+            
+    return formatted_output
 
-# function
+# Make sure this is at the bottom of your file
 tools = [calculate_financial_ratio, search_financial_docs]
