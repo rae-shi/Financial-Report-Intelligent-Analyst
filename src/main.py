@@ -1,4 +1,4 @@
-from graph import run_agent
+from .graph import run_agent
 
 if __name__ == "__main__":
     # Ask the user to input the query

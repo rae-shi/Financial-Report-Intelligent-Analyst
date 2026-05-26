@@ -36,4 +36,4 @@ def ingest_report(pdf_path):
     print(f"Done! {len(chunks)} chunks are now in your database.")
 
 if __name__ == "__main__":
-    ingest_report("data/nvidia_report.pdf")
+    ingest_report("data/nvidia_10_k.pdf")
