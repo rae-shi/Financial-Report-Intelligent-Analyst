@@ -7,3 +7,5 @@ psycopg2-binary
 pdfplumber
 python-dotenv
 langchain_postgres
+fastapi
+uvicorn
