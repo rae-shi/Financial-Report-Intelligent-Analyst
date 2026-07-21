@@ -1,0 +1,19 @@
+# Exported from Render on 2026-07-21T23:37:52Z
+version: "1"
+services:
+- type: web
+  name: Financial-Report-Intelligent-Analyst
+  runtime: python
+  repo: https://github.com/rae-shi/Financial-Report-Intelligent-Analyst
+  plan: free
+  envVars:
+  - key: DATABASE_URL
+    sync: false
+  - key: OPENAI_API_KEY
+    sync: false
+  - key: GOOGLE_API_KEY
+    sync: false
+  region: ohio
+  buildCommand: pip install -r requirements.txt
+  startCommand: uvicorn src.main:app --host 0.0.0.0 --port $PORT
+  autoDeployTrigger: commit
